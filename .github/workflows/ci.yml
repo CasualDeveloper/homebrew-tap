@@ -17,5 +17,8 @@ jobs:
       - name: Style
         run: brew style Formula/pinentry-companion.rb
 
+      - name: Register local tap
+        run: brew tap CasualDeveloper/tap "$GITHUB_WORKSPACE"
+
       - name: Audit
-        run: brew audit --strict --online --formula pinentry-companion
+        run: brew audit --strict --online CasualDeveloper/tap/pinentry-companion
