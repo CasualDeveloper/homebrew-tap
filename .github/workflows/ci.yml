@@ -1,0 +1,21 @@
+name: Tap CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    name: Formula audit
+    runs-on: macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Style
+        run: brew style Formula/pinentry-companion.rb
+
+      - name: Audit
+        run: brew audit --strict --online --formula pinentry-companion
