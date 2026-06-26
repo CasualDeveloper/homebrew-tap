@@ -33,9 +33,11 @@ class PinentryCompanion < Formula
   end
 
   test do
-    assert_match "pinentry-companion doctor", shell_output("#{bin}/pinentry-companion help doctor")
+    pinentry = bin/"pinentry-companion"
 
-    output = pipe_output("#{bin}/pinentry-companion", "GETINFO flavor\nBYE\n")
+    assert_match "pinentry-companion doctor", shell_output("#{pinentry} help doctor")
+
+    output = pipe_output(pinentry, "GETINFO flavor\nBYE\n")
     assert_match "OK Hi from pinentry-companion!", output
     assert_match "D companion", output
   end
