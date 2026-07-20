@@ -1,0 +1,63 @@
+name: Sync releases
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-releases
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Update formula pins
+    runs-on: macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Sync latest published releases
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: ruby .github/scripts/sync-releases.rb
+
+      - name: Detect changes
+        id: changes
+        run: |
+          git diff --check
+          if git diff --quiet -- Formula; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate updated formulae
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          brew style Formula/*.rb
+          brew tap CasualDeveloper/tap "$GITHUB_WORKSPACE"
+          brew trust CasualDeveloper/tap
+          brew audit --strict --online CasualDeveloper/tap/pinentry-companion
+          brew audit --strict --online CasualDeveloper/tap/pam-companion
+          brew audit --strict --online CasualDeveloper/tap/authcompanion
+          brew install CasualDeveloper/tap/pinentry-companion
+          brew test CasualDeveloper/tap/pinentry-companion
+          brew install CasualDeveloper/tap/pam-companion
+          brew test CasualDeveloper/tap/pam-companion
+          brew install CasualDeveloper/tap/authcompanion
+          brew test CasualDeveloper/tap/authcompanion
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula
+          git commit -m "chore: sync latest releases"
+          git push origin HEAD:main
