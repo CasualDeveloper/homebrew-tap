@@ -24,6 +24,7 @@ jobs:
         run: |
           brew audit --strict --online CasualDeveloper/tap/pinentry-companion
           brew audit --strict --online CasualDeveloper/tap/pam-companion
+          brew audit --strict --online CasualDeveloper/tap/authcompanion
 
       - name: Install and test
         run: |
@@ -31,3 +32,5 @@ jobs:
           brew test CasualDeveloper/tap/pinentry-companion
           brew install CasualDeveloper/tap/pam-companion
           brew test CasualDeveloper/tap/pam-companion
+          brew install CasualDeveloper/tap/authcompanion
+          brew test CasualDeveloper/tap/authcompanion
