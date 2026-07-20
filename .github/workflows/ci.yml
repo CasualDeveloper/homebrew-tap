@@ -18,7 +18,9 @@ jobs:
         run: brew style Formula/*.rb
 
       - name: Register local tap
-        run: brew tap CasualDeveloper/tap "$GITHUB_WORKSPACE"
+        run: |
+          brew tap CasualDeveloper/tap "$GITHUB_WORKSPACE"
+          brew trust CasualDeveloper/tap
 
       - name: Audit
         run: |
