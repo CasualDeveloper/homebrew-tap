@@ -12,13 +12,22 @@ jobs:
     runs-on: macos-26
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Style
-        run: brew style Formula/pinentry-companion.rb
+        run: brew style Formula/*.rb
 
       - name: Register local tap
         run: brew tap CasualDeveloper/tap "$GITHUB_WORKSPACE"
 
       - name: Audit
-        run: brew audit --strict --online CasualDeveloper/tap/pinentry-companion
+        run: |
+          brew audit --strict --online CasualDeveloper/tap/pinentry-companion
+          brew audit --strict --online CasualDeveloper/tap/pam-companion
+
+      - name: Install and test
+        run: |
+          brew install CasualDeveloper/tap/pinentry-companion
+          brew test CasualDeveloper/tap/pinentry-companion
+          brew install CasualDeveloper/tap/pam-companion
+          brew test CasualDeveloper/tap/pam-companion
