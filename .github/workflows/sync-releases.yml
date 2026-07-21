@@ -42,6 +42,7 @@ jobs:
         run: |
           brew style Formula/*.rb
           brew tap CasualDeveloper/tap "$GITHUB_WORKSPACE"
+          cp Formula/*.rb "$(brew --repo CasualDeveloper/tap)/Formula/"
           brew trust CasualDeveloper/tap
           brew audit --strict --online CasualDeveloper/tap/pinentry-companion
           brew audit --strict --online CasualDeveloper/tap/pam-companion
